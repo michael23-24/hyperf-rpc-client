@@ -1,0 +1,27 @@
+{
+  "name": "michael23/hyperf-rpc-client",
+  "description": "hyperf的jsonrpc客户端，适用php5.5以上",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "michael23",
+      "email": "244360439@qq.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "MicroTool\\HyperfRpcClient\\": "src/"
+    }
+  },
+  "keywords": [
+    "hyperf",
+    "rpc",
+    "php",
+    "client"
+  ],
+  "require": {
+    "php": ">=5.5",
+    "michael23/nacos-client": "^1.0"
+  }
+}
