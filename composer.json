@@ -21,7 +21,7 @@
     "client"
   ],
   "require": {
-    "php": ">=5.5",
-    "michael23/nacos-client": "^1.0"
+    "php": ">=7.2",
+    "michael23/nacos-client": "^2.0"
   }
 }
