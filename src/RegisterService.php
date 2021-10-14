@@ -43,6 +43,7 @@ class RegisterService
             ProtocolManager::PACKER         => new JsonEofPacker(),
             ProtocolManager::PATH_GENERATOR => new PathGenerator(),
             ProtocolManager::DATA_FORMATTER => new DataFormatter($publicParams),
+            ProtocolManager::NODE_SELECTOR  => null,
         ]);
     }
 

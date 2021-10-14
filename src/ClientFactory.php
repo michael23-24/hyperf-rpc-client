@@ -38,11 +38,11 @@ class ClientFactory
      * @param AbstractTransporter $transporter
      * @param mixed $nodeSelector
      */
-    protected function selectNodesForTransporter(TransporterInterface $transporter, $nodeSelector,  $service,  $protocol)
+    protected function selectNodesForTransporter(TransporterInterface $transporter, $nodeSelector, $service, $protocol)
     {
 
         $randomNodes = $this->getRandomNodes($service, $protocol);
-        list($transporter->host, $transporter->port) = $randomNodes;
+        $randomNodes && list($transporter->host, $transporter->port) = $randomNodes;
     }
 
     protected function getRandomNodes($service, $protocol)

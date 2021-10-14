@@ -8,6 +8,7 @@
 // +----------------------------------------------------------------------
 // | date: 2021-10-11
 // +----------------------------------------------------------------------
+error_reporting(E_ALL);
 require '../vendor/autoload.php';
 spl_autoload_register(function ($class) { // class = os\Linux
 
@@ -26,12 +27,12 @@ spl_autoload_register(function ($class) { // class = os\Linux
     }
 
 });
-$serviceName  = 'RegSourceService';
-$groupName    = 'basic_medical';
+$serviceName  = 'test';
+$groupName    = 'test';
 $namespaceId  = 'f6525dcf-8a03-4bb4-930a-b3e6bd510a5b';
 $timestamp    = time();
 $sign         = md5('b9abe46fsad2df1d9c3eerwef294f' . $timestamp);
-$publicParams = ['test' => 1, 'test' => 1001, 'test' => $sign, 'timestamp' => $timestamp];
+$publicParams = ['test' => 1, 'test' => 1001, 'sign' => $sign, 'timestamp' => $timestamp];
 $method = 'test';
 
 use MicroTool\HyperfRpcClient\RegisterService;
