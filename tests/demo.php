@@ -29,16 +29,16 @@ spl_autoload_register(function ($class) { // class = os\Linux
 });
 $serviceName  = 'test';
 $groupName    = 'test';
-$namespaceId  = 'test';
+$namespaceId  = 'f6525dcf-8a03-4bb4-930a-b3e6bd510a5b';
 $timestamp    = time();
-$sign         = md5('b9abe46fsad2df1d9c3eerwef294f' . $timestamp);
+$sign         = md5('test' . $timestamp);
 $publicParams = ['test' => 1, 'test' => 1001, 'sign' => $sign, 'timestamp' => $timestamp];
-$method = 'test';
+$method       = 'test';
 
 use MicroTool\HyperfRpcClient\RegisterService;
 
 
-$service = new RegisterService('http://localhost:8848', 'nacos', 'nacos', $publicParams);
+$service = new RegisterService('http://localhost:8848', 'nacos', 'nacos', $publicParams, 12);
 $client  = $service->register($serviceName, $groupName, $namespaceId);
 $time    = time();
 var_dump($client->$method('2021-10-08 15:25:00', '2021-10-09 15:25:00'));

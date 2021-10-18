@@ -22,7 +22,7 @@ class RegisterService
 
     protected $publicParams = [];
 
-    public function __construct($baseUri, $username = '', $password = '', $publicParams = [])
+    public function __construct($baseUri, $username = '', $password = '', $publicParams = [], $recvTimeout = 30)
     {
         if ($this->nacosClient == null) {
             $this->nacosClient = new NacosClient([
@@ -39,7 +39,7 @@ class RegisterService
         $this->publicParams = $publicParams;
 
         ProtocolManager::register('jsonrpc', [
-            ProtocolManager::TRANSPORTER    => new StreamSocketTransporter(),
+            ProtocolManager::TRANSPORTER    => new StreamSocketTransporter($recvTimeout),
             ProtocolManager::PACKER         => new JsonEofPacker(),
             ProtocolManager::PATH_GENERATOR => new PathGenerator(),
             ProtocolManager::DATA_FORMATTER => new DataFormatter($publicParams),
