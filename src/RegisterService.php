@@ -22,7 +22,7 @@ class RegisterService
 
     protected $publicParams = [];
 
-    public function __construct($baseUri, $username = '', $password = '', $publicParams = [], $recvTimeout = 200)
+    public function __construct($baseUri, $username = '', $password = '', $publicParams = [], $recvTimeout = 1)
     {
         if ($this->nacosClient == null) {
             $this->nacosClient = new NacosClient([
@@ -61,7 +61,8 @@ class RegisterService
         $serviceNode = [];
         foreach ($result['hosts'] as $service) {
             $serviceNode[] = [
-                $service['ip'],
+                //$service['ip'],
+               'localhost',
                 $service['port'],
             ];
         }

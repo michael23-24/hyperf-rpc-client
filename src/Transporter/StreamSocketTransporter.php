@@ -42,7 +42,7 @@ class StreamSocketTransporter extends AbstractTransporter
     protected $timeout;
 
     /**
-     * 接收数据超时设置,单位：毫秒
+     * 接收数据超时设置,单位：1000微妙
      * @var int
      */
     protected $recvTimeout;
@@ -52,7 +52,7 @@ class StreamSocketTransporter extends AbstractTransporter
      */
     protected $isConnected = false;
 
-    public function __construct($recvTimeout = 200, $host = '', $port = 9501, $timeout = 1.0)
+    public function __construct($recvTimeout = 1, $host = '', $port = 9501, $timeout = 1.0)
     {
         $this->host        = $host;
         $this->port        = $port;
@@ -89,7 +89,7 @@ class StreamSocketTransporter extends AbstractTransporter
         beginning:
         try {
             return $callback();
-        } catch (Throwable $e) {
+        } catch (\Exception $e) {
             if (--$times < 0) {
                 throw $e;
             }
@@ -108,7 +108,7 @@ class StreamSocketTransporter extends AbstractTransporter
         // The maximum number of retries is 12, and 1000 microseconds is the minimum waiting time.
         // The waiting time is doubled each time until the server writes data to the buffer.
         // Usually, the data can be obtained within 1 microsecond.
-        $result = $this->retry(12, function () use (&$buf, &$timeout) {
+        $result = $this->retry(14, function () use (&$buf, &$timeout) {
             $read   = [$this->client];
             $write  = null;
             $except = null;
