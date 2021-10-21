@@ -38,7 +38,7 @@ $method       = 'test';
 use MicroTool\HyperfRpcClient\RegisterService;
 
 
-$service = new RegisterService('http://localhost:8848', 'nacos', 'nacos', $publicParams, 12);
+$service = new RegisterService('http://localhost:8848', 'nacos', 'nacos', $publicParams);
 $client  = $service->register($serviceName, $groupName, $namespaceId);
 $time    = time();
 var_dump($client->$method('2021-10-08 15:25:00', '2021-10-09 15:25:00'));

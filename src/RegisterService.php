@@ -22,7 +22,7 @@ class RegisterService
 
     protected $publicParams = [];
 
-    public function __construct($baseUri, $username = '', $password = '', $publicParams = [], $recvTimeout = 30)
+    public function __construct($baseUri, $username = '', $password = '', $publicParams = [], $recvTimeout = 200)
     {
         if ($this->nacosClient == null) {
             $this->nacosClient = new NacosClient([

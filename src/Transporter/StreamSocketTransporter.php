@@ -42,7 +42,7 @@ class StreamSocketTransporter extends AbstractTransporter
     protected $timeout;
 
     /**
-     * 接收数据超时设置
+     * 接收数据超时设置,单位：毫秒
      * @var int
      */
     protected $recvTimeout;
@@ -52,7 +52,7 @@ class StreamSocketTransporter extends AbstractTransporter
      */
     protected $isConnected = false;
 
-    public function __construct($recvTimeout = 30, $host = '', $port = 9501, $timeout = 1.0)
+    public function __construct($recvTimeout = 200, $host = '', $port = 9501, $timeout = 1.0)
     {
         $this->host        = $host;
         $this->port        = $port;
@@ -101,7 +101,7 @@ class StreamSocketTransporter extends AbstractTransporter
     public function receive()
     {
         $buf     = '';
-        $timeout = $this->recvTimeout;
+        $timeout = $this->recvTimeout * 1000;
 
         stream_set_blocking($this->client, false);
 
@@ -112,7 +112,7 @@ class StreamSocketTransporter extends AbstractTransporter
             $read   = [$this->client];
             $write  = null;
             $except = null;
-            while (stream_select($read, $write, $except, $timeout)) {
+            while (stream_select($read, $write, $except, 0, $timeout)) {
                 foreach ($read as $r) {
                     $res = fread($r, 8192);
                     if (feof($r)) {
