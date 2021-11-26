@@ -36,20 +36,28 @@ class StreamSocketTransporter extends AbstractTransporter
     protected $client;
 
     /**
+     * 连接超时设置
      * @var float
      */
     protected $timeout;
+
+    /**
+     * 接收数据超时设置,单位：1000微妙
+     * @var int
+     */
+    protected $recvTimeout;
 
     /**
      * @var bool
      */
     protected $isConnected = false;
 
-    public function __construct($host = '', $port = 9501, $timeout = 1.0)
+    public function __construct($recvTimeout = 1, $host = '', $port = 9501, $timeout = 1.0)
     {
-        $this->host    = $host;
-        $this->port    = $port;
-        $this->timeout = $timeout;
+        $this->host        = $host;
+        $this->port        = $port;
+        $this->timeout     = $timeout;
+        $this->recvTimeout = $recvTimeout;
     }
 
     public function __destruct()
@@ -81,7 +89,7 @@ class StreamSocketTransporter extends AbstractTransporter
         beginning:
         try {
             return $callback();
-        } catch (Throwable $e) {
+        } catch (\Exception $e) {
             if (--$times < 0) {
                 throw $e;
             }
@@ -93,18 +101,18 @@ class StreamSocketTransporter extends AbstractTransporter
     public function receive()
     {
         $buf     = '';
-        $timeout = 1;
+        $timeout = $this->recvTimeout * 1000;
 
         stream_set_blocking($this->client, false);
 
         // The maximum number of retries is 12, and 1000 microseconds is the minimum waiting time.
         // The waiting time is doubled each time until the server writes data to the buffer.
         // Usually, the data can be obtained within 1 microsecond.
-        $result = $this->retry(12, function () use (&$buf, &$timeout) {
+        $result = $this->retry(14, function () use (&$buf, &$timeout) {
             $read   = [$this->client];
             $write  = null;
             $except = null;
-            while (stream_select($read, $write, $except, $timeout)) {
+            while (stream_select($read, $write, $except, 0, $timeout)) {
                 foreach ($read as $r) {
                     $res = fread($r, 8192);
                     if (feof($r)) {
@@ -157,7 +165,7 @@ class StreamSocketTransporter extends AbstractTransporter
 
         $client = stream_socket_client("tcp://{$host}:{$port}", $errno, $errstr, $this->timeout);
         if ($client === false) {
-            //throw new ConnectionException(sprintf('[%d] %s', $errno, $errstr));
+            throw new ConnectionException(sprintf('[%d] %s', $errno, $errstr));
         }
 
         $this->client      = $client;
