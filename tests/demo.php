@@ -29,24 +29,27 @@ spl_autoload_register(function ($class) { // class = os\Linux
 });
 $serviceName  = 'test';
 $groupName    = 'test';
-$namespaceId  = 'f6525dcf-8a03-4bb4-930a-b3e6bd510a5b';
+$namespaceId  = 'e142290e-cbf0-4f4d-bb30-3707d6fe96ab';
+
+//调用rpc服务
 $timestamp    = time();
 $sign         = md5('b9abe46fsad2df1d9c3eerwef294f' . $timestamp);
 $publicParams = ['test' => 1, 'test' => 1001, 'sign' => $sign, 'timestamp' => $timestamp];
-$method = 'test';
+$method = 'add';
 
 use MicroTool\HyperfRpcClient\RegisterService;
 
 
-$service = new RegisterService('http://localhost:8848', 'nacos', 'nacos', $publicParams);
+$service = new RegisterService('http://localhost:8848', 'nacos', 'nacos', $publicParams,30,'jsonrpc-http');
 $client  = $service->register($serviceName, $groupName, $namespaceId);
 $time    = time();
-var_dump($client->$method('2021-10-08 15:25:00', '2021-10-09 15:25:00'));
+var_dump($client->$method(33, 12));
 $time2 = time();
-var_dump(($time2 - $time));
+//var_dump(($time2 - $time));
 
 exit;
 
+//连接nacos
 use MicroTool\HyperfRpcClient\ClientFactory;
 use MicroTool\HyperfRpcClient\DataFormatter\DataFormatter;
 use MicroTool\HyperfRpcClient\Packer\JsonEofPacker;
@@ -54,6 +57,7 @@ use MicroTool\HyperfRpcClient\PathGenerator\PathGenerator;
 use MicroTool\HyperfRpcClient\ProtocolManager;
 use MicroTool\HyperfRpcClient\ServiceManager;
 use MicroTool\HyperfRpcClient\Transporter\StreamSocketTransporter;
+use MicroTool\HyperfRpcClient\Transporter\GuzzleHttpTransporter;
 
 
 $application = new \MicroTool\Nacos\NacosClient([
@@ -77,22 +81,21 @@ foreach ($result['hosts'] as $service) {
     ];
 }
 
-
-ProtocolManager::register('jsonrpc', [
-    ProtocolManager::TRANSPORTER    => new StreamSocketTransporter(),
+ProtocolManager::register('jsonrpc-http', [
+    ProtocolManager::TRANSPORTER    => new GuzzleHttpTransporter(),
     ProtocolManager::PACKER         => new JsonEofPacker(),
     ProtocolManager::PATH_GENERATOR => new PathGenerator(),
     ProtocolManager::DATA_FORMATTER => new DataFormatter($publicParams),
 ]);
-ServiceManager::register($serviceName, 'jsonrpc', [
+ServiceManager::register($serviceName, 'jsonrpc-http', [
     ServiceManager::NODES => $serviceNode
 ]);
 
 $ClientFactory = new ClientFactory();
-$client        = $ClientFactory->create($serviceName, 'jsonrpc');
+$client        = $ClientFactory->create($serviceName, 'jsonrpc-http');
 $time          = time();
-var_dump($client->$method('2021-10-08 15:25:00', '2021-10-09 15:25'));
+var_dump($client->$method(22, 2));
 $time2 = time();
-var_dump(($time2 - $time));
+//var_dump(($time2 - $time));
 
 

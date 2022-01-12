@@ -13,6 +13,7 @@ namespace MicroTool\HyperfRpcClient;
 use MicroTool\HyperfRpcClient\DataFormatter\DataFormatter;
 use MicroTool\HyperfRpcClient\Packer\JsonEofPacker;
 use MicroTool\HyperfRpcClient\PathGenerator\PathGenerator;
+use MicroTool\HyperfRpcClient\Transporter\GuzzleHttpTransporter;
 use MicroTool\HyperfRpcClient\Transporter\StreamSocketTransporter;
 use MicroTool\Nacos\NacosClient;
 
@@ -22,7 +23,9 @@ class RegisterService
 
     protected $publicParams = [];
 
-    public function __construct($baseUri, $username = '', $password = '', $publicParams = [], $recvTimeout = 1)
+    protected $protocol = null;
+
+    public function __construct($baseUri, $username = '', $password = '', $publicParams = [], $recvTimeout = 1, $protocol = 'jsonrpc')
     {
         if ($this->nacosClient == null) {
             $this->nacosClient = new NacosClient([
@@ -37,9 +40,17 @@ class RegisterService
             ]);
         }
         $this->publicParams = $publicParams;
+        $this->protocol     = $protocol;
 
-        ProtocolManager::register('jsonrpc', [
-            ProtocolManager::TRANSPORTER    => new StreamSocketTransporter($recvTimeout),
+        $transporter = null;
+        if ($this->protocol == 'jsonrpc') {
+            $transporter = new StreamSocketTransporter($recvTimeout);
+        } elseif ($this->protocol == 'jsonrpc-http') {
+            $transporter = new GuzzleHttpTransporter(null, null, ['timeout' => $recvTimeout]);
+        }
+
+        ProtocolManager::register($this->protocol, [
+            ProtocolManager::TRANSPORTER    => $transporter,
             ProtocolManager::PACKER         => new JsonEofPacker(),
             ProtocolManager::PATH_GENERATOR => new PathGenerator(),
             ProtocolManager::DATA_FORMATTER => new DataFormatter($publicParams),
@@ -66,12 +77,12 @@ class RegisterService
             ];
         }
 
-        ServiceManager::register($serviceName, 'jsonrpc', [
+        ServiceManager::register($serviceName, $this->protocol, [
             ServiceManager::NODES => $serviceNode
         ]);
 
         $clientFactory = new ClientFactory();
-        return $clientFactory->create($serviceName, 'jsonrpc');
+        return $clientFactory->create($serviceName, $this->protocol);
 
     }
 }
