@@ -72,8 +72,7 @@ class RegisterService
         $serviceNode = [];
         foreach ($result['hosts'] as $service) {
             $serviceNode[] = [
-                //$service['ip'],
-               'localhost',
+                $service['ip'],
                 $service['port'],
             ];
         }
